@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Quiz Setup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .options label:hover {
+            background-color: #f8f9fa;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #1557b0;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .correct-text { color: #137333; font-weight: bold; margin-left: 10px;}
+        .wrong-text { color: #c5221f; font-weight: bold; margin-left: 10px;}
+    </style>
+</head>
+<body>
+
+    <h1>NPTEL Architecture - Assignment 1</h1>
+    
+    <div class="quiz-container" id="quiz">
+        </div>
+
+    <button class="submit-btn" onclick="calculateScore()">Submit Answers</button>
+    <div id="result"></div>
+
+    <script>
+        const quizData = [
+            {
+                question: " Mauryan Ashokan columns were inspired by:",
+                options: ["Large trees", "Ruins of Persepolis", "Mount Meru", "Tower of victory"],
+                answer: "Ruins of Persepolis"
+            },
+            {
+                question: " The earliest extant free-standing temple is at Sanchi, known as:",
+                options: ["Temple 17 from the early 5th century CE", "Temple 30 from the 8th century CE", "Temple 64 from 500 BCE", "Virupaksha temple from 200 CE"],
+                answer: "Temple 17 from the early 5th century CE"
+            },
+            {
+                question: " The following temple is not monolithic:",
+                options: ["Kailas temple at Ellora", "Arjuna ratha at Mammalapuram", "Shore temple at Mammalapuram", "Cave 5 at Elephanta"],
+                answer: "Shore temple at Mammalapuram"
+            },
+            {
+                question: " The earliest excavated cave architecture in India dates to:",
+                options: ["1000-500 BCE", "300-200 BCE", "100-200 CE", "200-500 CE"],
+                answer: "300-200 BCE"
+            },
+            {
+                question: " The two main types of temple superstructures are:",
+                options: ["Latina and kutina", "Kutina and Vesara", "Latina and Bhumija", "Kalinga and Kutina"],
+                answer: "Latina and kutina"
+            },
+            {
+                question: " A Hindu temple is:",
+                options: ["A shelter for divinity", "A model of heaven", "A place for cooking", "A palace for the king"],
+                answer: "A shelter for divinity"
+            },
+            {
+                question: "Buddhist viharas are:",
+                options: ["Places of community prayer", "Residential arrangements for monks", "A necropolis", "Depictions of the Buddha"],
+                answer: "Residential arrangements for monks"
+            },
+            {
+                question: " The Indus Valley Civilisation was known for:",
+                options: ["Brick architecture", "Grid-iron planning of streets", "Planned drainage system with inspection chambers", "All of the above"],
+                answer: "All of the above"
+            },
+            {
+                question: " Buddhist architecture before 400 BCE comprised:",
+                options: ["Stupas", "Statues of Buddha", "Both of the above", "None of the above"],
+                answer: "None of the above"
+            },
+            {
+                question: "In western India, particularly Gujarat, western Madhya Pradesh, and Maharashtra, a unique type of temple superstructure was the:",
+                options: ["Kalinga", "Shekhari", "Bhumija", "Phamsana"],
+                answer: "Bhumija"
+            }
+        ];
+        // Shuffle the questions so they are random every time!
+    quizData.sort(() => Math.random() - 0.5);
+
+        const quizContainer = document.getElementById('quiz');
+
+        // Render the quiz
+        quizData.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            questionDiv.id = `q-block-${index}`;
+            
+            let optionsHTML = '';
+            q.options.forEach(opt => {
+                optionsHTML += `
+                    <label>
+                        <input type="radio" name="question${index}" value="${opt}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            questionDiv.innerHTML = `
+                <p>${q.question} <span id="feedback-${index}"></span></p>
+                <div class="options">
+                    ${optionsHTML}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        function calculateScore() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const feedbackSpan = document.getElementById(`feedback-${index}`);
+                
+                if (selectedOption) {
+                    if (selectedOption.value === q.answer) {
+                        score++;
+                        feedbackSpan.innerHTML = "✅ Correct";
+                        feedbackSpan.className = "correct-text";
+                    } else {
+                        feedbackSpan.innerHTML = `❌ Wrong (Answer: ${q.answer})`;
+                        feedbackSpan.className = "wrong-text";
+                    }
+                } else {
+                    feedbackSpan.innerHTML = `⚠️ Unanswered (Answer: ${q.answer})`;
+                    feedbackSpan.className = "wrong-text";
+                }
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>

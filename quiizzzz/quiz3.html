@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Quiz - Assignment 3</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .options label:hover {
+            background-color: #f8f9fa;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #1557b0;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .correct-text { color: #137333; font-weight: bold; margin-left: 10px;}
+        .wrong-text { color: #c5221f; font-weight: bold; margin-left: 10px;}
+    </style>
+</head>
+<body>
+
+    <h1>NPTEL Architecture - Assignment 3</h1>
+    
+    <div class="quiz-container" id="quiz">
+        </div>
+
+    <button class="submit-btn" onclick="calculateScore()">Submit Answers</button>
+    <div id="result"></div>
+
+    <script>
+        const quizData = [
+            {
+                question: " Which is one of the salient features of Mughal Architecture that was borrowed from the Timurids",
+                options: ["Arches and minarets", "Pillars", "Ivans", "Pavilions"],
+                answer: "Ivans"
+            },
+            {
+                question: " The late Maratha temples of the 18th century were sometimes:",
+                options: ["Similar to Bhumija and Shekhari types", "Based on South Indian Temples", "Circular in plan", "Unlike in North India"],
+                answer: "Similar to Bhumija and Shekhari types"
+            },
+            {
+                question: " The common type for a building plan called the Hasht Bihisht comprised:",
+                options: ["A circular room with radiation arms", "Four sets of rooms in corners connected by large iwans and galleries", "A building set in a garden", "All of the above"],
+                answer: "Four sets of rooms in corners connected by large iwans and galleries"
+            },
+            {
+                question: " Hauz -i- Nilofer or the pool of lotuses, built by Babur was carved out of ?",
+                options: ["Basalt", "Yellow Dholpur rock", "Marble", "Sandstone"],
+                answer: "Yellow Dholpur rock"
+            },
+            {
+                question: "Architecturally, pick the odd one out:",
+                options: ["Bibi-Ka- Maqbara, Aurangabad", "Humayun's Tomb, Delhi", "Akbar's Tomb, Sikandara", "Taj Mahal, Agra"],
+                answer: "Akbar's Tomb, Sikandara"
+            },
+            {
+                question: " The citadel built inside the city of Shahajahanbad is today commonly called as -",
+                options: ["Purana Qila", "Red Fort", "Chand minar", "Delhi Fort"],
+                answer: "Red Fort"
+            },
+            {
+                question: " The four garden plan followed from Bagh-e-babur to many monuments is termed -",
+                options: ["Chahar bagh", "Chini Khana", "Two portion garden system", "A circular garden"],
+                answer: "Chahar bagh"
+            },
+            {
+                question: " The study of Sultanate-Mughal-Maratha-Rajput architecture as a single complex demonstrates",
+                options: ["Architecture as an expression of political power", "The movement of ideas and people across region", "A uniformity of architectural ideas across India", "All of the above"],
+                answer: "All of the above"
+            },
+            {
+                question: " Mughal architectural elements include:",
+                options: ["Bangla roofs", "Baluster columns", "Multifoil arches", "All of the above"],
+                answer: "All of the above"
+            },
+            {
+                question: " Early Maratha architecture was similar to:",
+                options: ["Mughal architecture", "Yadava Architecture", "Sultanate architecture", "Rashtrakuta architecture"],
+                answer: "Sultanate architecture"
+            }
+        ];
+        // Shuffle the questions so they are random every time!
+    quizData.sort(() => Math.random() - 0.5);
+
+        const quizContainer = document.getElementById('quiz');
+
+        // Render the quiz
+        quizData.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            questionDiv.id = `q-block-${index}`;
+            
+            let optionsHTML = '';
+            q.options.forEach(opt => {
+                optionsHTML += `
+                    <label>
+                        <input type="radio" name="question${index}" value="${opt}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            questionDiv.innerHTML = `
+                <p>${q.question} <span id="feedback-${index}"></span></p>
+                <div class="options">
+                    ${optionsHTML}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        function calculateScore() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const feedbackSpan = document.getElementById(`feedback-${index}`);
+                
+                if (selectedOption) {
+                    if (selectedOption.value === q.answer) {
+                        score++;
+                        feedbackSpan.innerHTML = "✅ Correct";
+                        feedbackSpan.className = "correct-text";
+                    } else {
+                        feedbackSpan.innerHTML = `❌ Wrong (Answer: ${q.answer})`;
+                        feedbackSpan.className = "wrong-text";
+                    }
+                } else {
+                    feedbackSpan.innerHTML = `⚠️ Unanswered (Answer: ${q.answer})`;
+                    feedbackSpan.className = "wrong-text";
+                }
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>
