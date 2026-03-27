@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Quiz - Assignment 2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .options label:hover {
+            background-color: #f8f9fa;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #1557b0;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .correct-text { color: #137333; font-weight: bold; margin-left: 10px;}
+        .wrong-text { color: #c5221f; font-weight: bold; margin-left: 10px;}
+    </style>
+</head>
+<body>
+
+    <h1>NPTEL Architecture - Assignment 2</h1>
+    
+    <div class="quiz-container" id="quiz">
+        </div>
+
+    <button class="submit-btn" onclick="calculateScore()">Submit Answers</button>
+    <div id="result"></div>
+
+    <script>
+        const quizData = [
+            {
+                question: " What were the features of architecture in Samarkand that influenced architecture of the Mughals in India?",
+                options: ["Bulbous dome, ivans, large portal and surface styles", "Arches, windows, walls and pillars", "Tiles, square based pillars", "Lintel and beam structures"],
+                answer: "Bulbous dome, ivans, large portal and surface styles"
+            },
+            {
+                question: " The great mosque of Daulatabad (now called the Bharat Mata Mandir) shows:",
+                options: ["A complete break in architectural traditions of the region", "A continuity of architectural traditions of the region", "The movement of artisans from Gujarat", "The arrival of masons from the Delhi sultanate"],
+                answer: "A continuity of architectural traditions of the region"
+            },
+            {
+                question: " The fort of Bidar was built by:",
+                options: ["Sultans of Gujarat", "Sultans of Bijapur", "The Bahmani Sultans", "Kings of Vijaynagara"],
+                answer: "The Bahmani Sultans"
+            },
+            {
+                question: " The Chand Minar was built in:",
+                options: ["Delhi", "Bidar", "Daulatabad", "Golconda"],
+                answer: "Daulatabad"
+            },
+            {
+                question: " The water distribution technologies of the sultanates -",
+                options: ["Allowed cities to be sited far away from flowing water", "Comprised pipes and conduits", "Used imported technologies like qanats", "All of the above"],
+                answer: "All of the above"
+            },
+            {
+                question: " The Kingdom of Vijayanagar was founded by",
+                options: ["Simukha and Kanishka", "Harihara and Bukka", "King Vijaya", "Digvijaya"],
+                answer: "Harihara and Bukka"
+            },
+            {
+                question: " The defence features of the fort of Daulatabad included",
+                options: ["Wild animals", "Thorny hedges", "Dark tunneled passages", "Mines"],
+                answer: "Dark tunneled passages"
+            },
+            {
+                question: " The temple at Anwa has which type of dome -",
+                options: ["Squinch domes", "Circular domes", "Corbelled domes", "Arched domes"],
+                answer: "Corbelled domes"
+            },
+            {
+                question: " Hammams were lit and ventilated by:",
+                options: ["Small openings in the roof", "Large windows on the back wall", "Artificial ventilation and light", "All of the above"],
+                answer: "Small openings in the roof"
+            },
+            {
+                question: " Timurid influence on the sultanate architecture of India was in the form of:",
+                options: ["Proportions", "Colour schemes", "Use of decorative tiles", "All of the above"],
+                answer: "All of the above"
+            }
+        ];
+        // Shuffle the questions so they are random every time!
+    quizData.sort(() => Math.random() - 0.5);
+
+        const quizContainer = document.getElementById('quiz');
+
+        // Render the quiz
+        quizData.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            questionDiv.id = `q-block-${index}`;
+            
+            let optionsHTML = '';
+            q.options.forEach(opt => {
+                optionsHTML += `
+                    <label>
+                        <input type="radio" name="question${index}" value="${opt}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            questionDiv.innerHTML = `
+                <p>${q.question} <span id="feedback-${index}"></span></p>
+                <div class="options">
+                    ${optionsHTML}
+                </div>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        function calculateScore() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const feedbackSpan = document.getElementById(`feedback-${index}`);
+                
+                if (selectedOption) {
+                    if (selectedOption.value === q.answer) {
+                        score++;
+                        feedbackSpan.innerHTML = "✅ Correct";
+                        feedbackSpan.className = "correct-text";
+                    } else {
+                        feedbackSpan.innerHTML = `❌ Wrong (Answer: ${q.answer})`;
+                        feedbackSpan.className = "wrong-text";
+                    }
+                } else {
+                    feedbackSpan.innerHTML = `⚠️ Unanswered (Answer: ${q.answer})`;
+                    feedbackSpan.className = "wrong-text";
+                }
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>
