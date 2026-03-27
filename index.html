@@ -3,116 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPTEL Architecture Practice Portal</title>
+    <title>NPTEL Architecture Master Practice</title>
     <style>
-        /* Base styles matching image_10.png */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            background-color: #ffffff;
-            color: #333;
-        }
-
-        /* Main container for the whole menu */
-        .main-container {
-            width: 100%;
-            max-width: 600px; /* Limits width on desktop */
-            margin-top: 20px;
-        }
-
-        /* Header section with instruction and home icon */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding: 0 10px;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin: 0;
-            line-height: 1.3;
-            font-weight: 600;
-        }
-
-        .home-icon {
-            font-size: 24px;
-            text-decoration: none;
-            color: #333;
-        }
-
-        /* Button list container */
-        .button-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px; /* Space between buttons */
-        }
-
-        /* Style for the link tag itself */
-        .quiz-link {
-            text-decoration: none; /* Removes underline */
-            display: block; /* Makes the entire link area clickable */
-        }
-
-        /* Style for the buttons matching image_10.png */
-        .quiz-button {
-            background-color: #6c7d92; /* The exact grey-blue from your photo */
-            color: #ffffff;
-            border: none;
-            border-radius: 8px; /* Rounded corners */
-            padding: 18px; /* Vertical size */
-            font-size: 18px;
-            text-align: center;
-            width: 100%; /* Spans full container width */
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            box-sizing: border-box; /* Ensures padding doesn't affect width */
-        }
-
-        /* Simple hover effect */
-        .quiz-button:hover {
-            background-color: #5a6a7e;
-        }
-
-        /* Click effect */
-        .quiz-button:active {
-            transform: scale(0.98);
-        }
-
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #1a73e8; margin-bottom: 30px; }
+        #menu-view { display: block; }
+        .quiz-button { background-color: #6c7d92; color: white; border: none; border-radius: 8px; padding: 18px; font-size: 18px; width: 100%; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .quiz-button:hover { background-color: #5a6a7e; }
+        #quiz-view { display: none; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .back-btn { background-color: #e0e0e0; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .back-btn:hover { background-color: #d0d0d0; }
+        .question { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .question p { font-weight: bold; font-size: 1.1em; }
+        .options label { display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 5px; transition: background 0.2s; }
+        .options label:hover { background-color: #f8f9fa; }
+        input[type="radio"] { margin-right: 10px; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background-color: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; margin-top: 20px; }
+        #result { margin-top: 20px; font-size: 1.5em; font-weight: bold; text-align: center; }
+        .correct-text { color: #137333; font-weight: bold; margin-left: 10px;}
+        .wrong-text { color: #c5221f; font-weight: bold; margin-left: 10px;}
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        
-        <div class="header-section">
-            <h1>Please select which week you<br>would like to practice -</h1>
-            <a href="#" class="home-icon">⌂</a> </div>
-
-        <div class="button-list">
-            
-            <a href="quiz1.html" target="_blank" class="quiz-link">
-                <button class="quiz-button">week - 1</button>
-            </a>
-
-            <a href="quiz2.html" target="_blank" class="quiz-link">
-                <button class="quiz-button">week - 2</button>
-            </a>
-
-            <a href="quiz3.html" target="_blank" class="quiz-link">
-                <button class="quiz-button">week - 3</button>
-            </a>
-
-            <a href="quiz4.html" target="_blank" class="quiz-link">
-                <button class="quiz-button">week - 4</button>
-            </a>
-
-            </div>
+    <div class="container" id="menu-view">
+        <h1>Select a week to practice -</h1>
+        <button class="quiz-button" onclick="loadQuiz(1)">week - 1</button>
+        <button class="quiz-button" onclick="loadQuiz(2)">week - 2</button>
+        <button class="quiz-button" onclick="loadQuiz(3)">week - 3</button>
+        <button class="quiz-button" onclick="loadQuiz(4)">week - 4</button>
     </div>
 
+    <div class="container" id="quiz-view">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="goBack()">← Menu</button>
+            <h2 id="quiz-title" style="margin: 0; color: #1a73e8;">Quiz</h2>
+            <button class="back-btn" id="retry-btn" onclick="resetQuiz()" style="display:none; background-color: #34a853; color: white;">↻ Try Again</button>
+        </div>
+        <div id="quiz-content"></div>
+        <button class="submit-btn" id="main-submit" onclick="calculateScore()">Submit Answers</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const quizDatabase = {
+            1: [
+                {q: "Mauryan Ashokan columns were inspired by:", opts: ["Large trees", "Ruins of Persepolis", "Mount Meru", "Tower of victory"], a: "Ruins of Persepolis"},
+                {q: "The earliest extant free-standing temple is at Sanchi, known as:", opts: ["Temple 17 from the early 5th century CE", "Temple 30 from the 8th century CE", "Temple 64 from 500 BCE", "Virupaksha temple from 200 CE"], a: "Temple 17 from the early 5th century CE"},
+                {q: "The following temple is not monolithic:", opts: ["Kailas temple at Ellora", "Arjuna ratha at Mammalapuram", "Shore temple at Mammalapuram", "Cave 5 at Elephanta"], a: "Shore temple at Mammalapuram"},
+                {q: "The earliest excavated cave architecture in India dates to:", opts: ["1000-500 BCE", "300-200 BCE", "100-200 CE", "200-500 CE"], a: "300-200 BCE"},
+                {q: "The two main types of temple superstructures are:", opts: ["Latina and kutina", "Kutina and Vesara", "Latina and Bhumija", "Kalinga and Kutina"], a: "Latina and kutina"},
+                {q: "A Hindu temple is:", opts: ["A shelter for divinity", "A model of heaven", "A place for cooking", "A palace for the king"], a: "A shelter for divinity"},
+                {q: "Buddhist viharas are:", opts: ["Places of community prayer", "Residential arrangements for monks", "A necropolis", "Depictions of the Buddha"], a: "Residential arrangements for monks"},
+                {q: "The Indus Valley Civilisation was known for:", opts: ["Brick architecture", "Grid-iron planning of streets", "Planned drainage system with inspection chambers", "All of the above"], a: "All of the above"},
+                {q: "Buddhist architecture before 400 BCE comprised:", opts: ["Stupas", "Statues of Buddha", "Both of the above", "None of the above"], a: "None of the above"},
+                {q: "In western India, a unique type of temple superstructure was the:", opts: ["Kalinga", "Shekhari", "Bhumija", "Phamsana"], a: "Bhumija"}
+            ],
+            2: [
+                {q: "What were the features of architecture in Samarkand that influenced architecture of the Mughals in India?", opts: ["Bulbous dome, ivans, large portal and surface styles", "Arches, windows, walls and pillars", "Tiles, square based pillars", "Lintel and beam structures"], a: "Bulbous dome, ivans, large portal and surface styles"},
+                {q: "The great mosque of Daulatabad shows:", opts: ["A complete break in architectural traditions", "A continuity of architectural traditions of the region", "Movement of artisans from Gujarat", "Arrival of masons from the Delhi sultanate"], a: "A continuity of architectural traditions of the region"},
+                {q: "The fort of Bidar was built by:", opts: ["Sultans of Gujarat", "Sultans of Bijapur", "The Bahmani Sultans", "Kings of Vijaynagara"], a: "The Bahmani Sultans"},
+                {q: "The Chand Minar was built in:", opts: ["Delhi", "Bidar", "Daulatabad", "Golconda"], a: "Daulatabad"},
+                {q: "The water distribution technologies of the sultanates -", opts: ["Allowed cities to be sited far from water", "Comprised pipes and conduits", "Used imported technologies like qanats", "All of the above"], a: "All of the above"},
+                {q: "The Kingdom of Vijayanagar was founded by", opts: ["Simukha and Kanishka", "Harihara and Bukka", "King Vijaya", "Digvijaya"], a: "Harihara and Bukka"},
+                {q: "The defence features of the fort of Daulatabad included", opts: ["Wild animals", "Thorny hedges", "Dark tunneled passages", "Mines"], a: "Dark tunneled passages"},
+                {q: "The temple at Anwa has which type of dome -", opts: ["Squinch domes", "Circular domes", "Corbelled domes", "Arched domes"], a: "Corbelled domes"},
+                {q: "Hammams were lit and ventilated by:", opts: ["Small openings in the roof", "Large windows", "Artificial ventilation", "All of the above"], a: "Small openings in the roof"},
+                {q: "Timurid influence on the sultanate architecture was:", opts: ["Proportions", "Colour schemes", "Use of decorative tiles", "All of the above"], a: "All of the above"}
+            ],
+            3: [
+                {q: "Which is a salient feature of Mughal Architecture borrowed from the Timurids", opts: ["Arches and minarets", "Pillars", "Ivans", "Pavilions"], a: "Ivans"},
+                {q: "The late Maratha temples of the 18th century were sometimes:", opts: ["Similar to Bhumija and Shekhari types", "Based on South Indian Temples", "Circular in plan", "Unlike in North India"], a: "Similar to Bhumija and Shekhari types"},
+                {q: "The common type for a building plan called the Hasht Bihisht comprised:", opts: ["A circular room", "Four sets of rooms in corners connected by iwans", "A building set in a garden", "All of the above"], a: "Four sets of rooms in corners connected by iwans"},
+                {q: "Hauz -i- Nilofer, built by Babur was carved out of ?", opts: ["Basalt", "Yellow Dholpur rock", "Marble", "Sandstone"], a: "Yellow Dholpur rock"},
+                {q: "Architecturally, pick the odd one out:", opts: ["Bibi-Ka- Maqbara", "Humayun's Tomb", "Akbar's Tomb", "Taj Mahal"], a: "Akbar's Tomb"},
+                {q: "The citadel built inside the city of Shahajahanbad is commonly called -", opts: ["Purana Qila", "Red Fort", "Chand minar", "Delhi Fort"], a: "Red Fort"},
+                {q: "The four garden plan followed from Bagh-e-babur is termed -", opts: ["Chahar bagh", "Chini Khana", "Two portion garden system", "A circular garden"], a: "Chahar bagh"},
+                {q: "The study of Sultanate-Mughal-Maratha-Rajput architecture demonstrates", opts: ["Political power expression", "Movement of ideas and people", "Uniformity of ideas", "All of the above"], a: "All of the above"},
+                {q: "Mughal architectural elements include:", opts: ["Bangla roofs", "Baluster columns", "Multifoil arches", "All of the above"], a: "All of the above"},
+                {q: "Early Maratha architecture was similar to:", opts: ["Mughal architecture", "Yadava Architecture", "Sultanate architecture", "Rashtrakuta architecture"], a: "Sultanate architecture"}
+            ],
+            4: [
+                {q: "Princely states in India emulated the architecture of", opts: ["The Mughals", "The British", "Anyone in power above them", "All of the above"], a: "All of the above"},
+                {q: "Chandigarh was designed by", opts: ["B.V.Doshi", "Louis Kahn", "Le Corbusier", "Charles Correa"], a: "Le Corbusier"},
+                {q: "The Holkar Palace at Chandwad is", opts: ["Built using wood, stone and lime plaster", "Set in middle of urban settings", "Ornamented with woodwork and stucco", "All of the above"], a: "All of the above"},
+                {q: "A good example of modern architecture relevant to India is:", opts: ["The IUCAA, Pune", "Majestic Buildings, Mumbai", "Osmania Hospital, Hyderabad", "Jaipur Palace"], a: "The IUCAA, Pune"},
+                {q: "Palaces built in 18th/19th century imported ____________ from Europe", opts: ["Glass, tiles and timber", "Artisans and craftsmen", "Spices", "Courtyard system"], a: "Glass, tiles and timber material"},
+                {q: "The Marathas build palaces that", opts: ["Borrowed Mughal elements", "Based on vernacular architecture", "Both of the above", "None of the above"], a: "None of the above"},
+                {q: "Name the pillar orders followed by Neo-classical styles", opts: ["Doric, Fluted", "Ionic, Corinthian, Doric, Tuscan", "Square, hexagonal, obelisk", "Squinch, straight"], a: "Ionic, Corinthian, Doric, Tuscan"},
+                {q: "The only Indian winner of the prestigious Pritzker has been:", opts: ["Charles Correa", "Kulbhushan Jain", "Balkrishna V Doshi", "G.B.Mhatre"], a: "Balkrishna V Doshi"},
+                {q: "Contemporary architectural practice often", opts: ["Privileges economy over design", "Not concerned with costs", "Not controlled by developers", "Tried to imitate forms"], a: "Privileges the economy of construction over good design"},
+                {q: "Architectural style that first tied India to international architecture was", opts: ["Indo-saracenic", "Art Deco", "Modern", "Neo-classical"], a: "Art Deco"}
+            ]
+        };
+
+        let currentQuizData = [];
+        let currentWeek = 0;
+
+        function loadQuiz(weekNumber) {
+            currentWeek = weekNumber;
+            document.getElementById('menu-view').style.display = 'none';
+            document.getElementById('quiz-view').style.display = 'block';
+            document.getElementById('quiz-title').innerText = `Week - ${weekNumber}`;
+            document.getElementById('retry-btn').style.display = 'none';
+            document.getElementById('main-submit').style.display = 'block';
+            document.getElementById('result').innerHTML = '';
+            renderQuestions(weekNumber);
+        }
+
+        function renderQuestions(weekNumber) {
+            currentQuizData = [...quizDatabase[weekNumber]].sort(() => Math.random() - 0.5);
+            const quizContainer = document.getElementById('quiz-content');
+            quizContainer.innerHTML = ''; 
+            currentQuizData.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                let shuffledOptions = [...q.opts].sort(() => Math.random() - 0.5);
+                let optionsHTML = '';
+                shuffledOptions.forEach(opt => {
+                    optionsHTML += `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`;
+                });
+                questionDiv.innerHTML = `<p>${index + 1}) ${q.q} <span id="feedback-${index}"></span></p><div class="options">${optionsHTML}</div>`;
+                quizContainer.appendChild(questionDiv);
+            });
+            window.scrollTo(0, 0);
+        }
+
+        function resetQuiz() {
+            renderQuestions(currentWeek);
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('retry-btn').style.display = 'none';
+            document.getElementById('main-submit').style.display = 'block';
+        }
+
+        function goBack() {
+            document.getElementById('menu-view').style.display = 'block';
+            document.getElementById('quiz-view').style.display = 'none';
+        }
+
+        function calculateScore() {
+            let score = 0;
+            currentQuizData.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const feedback = document.getElementById(`feedback-${index}`);
+                if (selected) {
+                    if (selected.value.includes(q.a) || q.a.includes(selected.value)) {
+                        score++;
+                        feedback.innerHTML = "✅ Correct";
+                        feedback.className = "correct-text";
+                    } else {
+                        feedback.innerHTML = `❌ Wrong (Answer: ${q.a})`;
+                        feedback.className = "wrong-text";
+                    }
+                } else {
+                    feedback.innerHTML = `⚠️ Unanswered (Answer: ${q.a})`;
+                    feedback.className = "wrong-text";
+                }
+            });
+            document.getElementById('result').innerHTML = `You scored ${score} out of 10!`;
+            document.getElementById('retry-btn').style.display = 'block';
+            document.getElementById('main-submit').style.display = 'none';
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
 </body>
 </html>
