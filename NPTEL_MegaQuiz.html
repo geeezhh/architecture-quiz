@@ -40,99 +40,60 @@
         <button class="quiz-button" onclick="loadQuiz(3)">week - 3</button>
         <button class="quiz-button" onclick="loadQuiz(4)">week - 4</button>
     </div>
-
-    <div class="container" id="quiz-view">
+<div class="container" id="quiz-view">
         <div class="nav-bar">
             <button class="back-btn" onclick="goBack()">← Back to Menu</button>
             <h2 id="quiz-title" style="margin: 0; color: #1a73e8;">Quiz</h2>
+            <button class="back-btn" id="retry-btn" onclick="resetQuiz()" style="display:none; background-color: #34a853; color: white;">↻ Try Again</button>
         </div>
         <div id="quiz-content"></div>
-        <button class="submit-btn" onclick="calculateScore()">Submit Answers</button>
+        <button class="submit-btn" id="main-submit" onclick="calculateScore()">Submit Answers</button>
         <div id="result"></div>
     </div>
 
     <script>
-        // The Master Database of all 4 weeks
-        const quizDatabase = {
-            1: [
-                {q: "Mauryan Ashokan columns were inspired by:", opts: ["Large trees", "Ruins of Persepolis", "Mount Meru", "Tower of victory"], a: "Ruins of Persepolis"},
-                {q: "The earliest extant free-standing temple is at Sanchi, known as:", opts: ["Temple 17 from the early 5th century CE", "Temple 30 from the 8th century CE", "Temple 64 from 500 BCE", "Virupaksha temple from 200 CE"], a: "Temple 17 from the early 5th century CE"},
-                {q: "The following temple is not monolithic:", opts: ["Kailas temple at Ellora", "Arjuna ratha at Mammalapuram", "Shore temple at Mammalapuram", "Cave 5 at Elephanta"], a: "Shore temple at Mammalapuram"},
-                {q: "The earliest excavated cave architecture in India dates to:", opts: ["1000-500 BCE", "300-200 BCE", "100-200 CE", "200-500 CE"], a: "300-200 BCE"},
-                {q: "The two main types of temple superstructures are:", opts: ["Latina and kutina", "Kutina and Vesara", "Latina and Bhumija", "Kalinga and Kutina"], a: "Latina and kutina"},
-                {q: "A Hindu temple is:", opts: ["A shelter for divinity", "A model of heaven", "A place for cooking", "A palace for the king"], a: "A shelter for divinity"},
-                {q: "Buddhist viharas are:", opts: ["Places of community prayer", "Residential arrangements for monks", "A necropolis", "Depictions of the Buddha"], a: "Residential arrangements for monks"},
-                {q: "The Indus Valley Civilisation was known for:", opts: ["Brick architecture", "Grid-iron planning of streets", "Planned drainage system with inspection chambers", "All of the above"], a: "All of the above"},
-                {q: "Buddhist architecture before 400 BCE comprised:", opts: ["Stupas", "Statues of Buddha", "Both of the above", "None of the above"], a: "None of the above"},
-                {q: "In western India, a unique type of temple superstructure was the:", opts: ["Kalinga", "Shekhari", "Bhumija", "Phamsana"], a: "Bhumija"}
-            ],
-            2: [
-                {q: "What were the features of architecture in Samarkand that influenced architecture of the Mughals in India?", opts: ["Bulbous dome, ivans, large portal and surface styles", "Arches, windows, walls and pillars", "Tiles, square based pillars", "Lintel and beam structures"], a: "Bulbous dome, ivans, large portal and surface styles"},
-                {q: "The great mosque of Daulatabad (now called the Bharat Mata Mandir) shows:", opts: ["A complete break in architectural traditions of the region", "A continuity of architectural traditions of the region", "The movement of artisans from Gujarat", "The arrival of masons from the Delhi sultanate"], a: "A continuity of architectural traditions of the region"},
-                {q: "The fort of Bidar was built by:", opts: ["Sultans of Gujarat", "Sultans of Bijapur", "The Bahmani Sultans", "Kings of Vijaynagara"], a: "The Bahmani Sultans"},
-                {q: "The Chand Minar was built in:", opts: ["Delhi", "Bidar", "Daulatabad", "Golconda"], a: "Daulatabad"},
-                {q: "The water distribution technologies of the sultanates -", opts: ["Allowed cities to be sited far away from flowing water", "Comprised pipes and conduits", "Used imported technologies like qanats", "All of the above"], a: "All of the above"},
-                {q: "The Kingdom of Vijayanagar was founded by", opts: ["Simukha and Kanishka", "Harihara and Bukka", "King Vijaya", "Digvijaya"], a: "Harihara and Bukka"},
-                {q: "The defence features of the fort of Daulatabad included", opts: ["Wild animals", "Thorny hedges", "Dark tunneled passages", "Mines"], a: "Dark tunneled passages"},
-                {q: "The temple at Anwa has which type of dome -", opts: ["Squinch domes", "Circular domes", "Corbelled domes", "Arched domes"], a: "Corbelled domes"},
-                {q: "Hammams were lit and ventilated by:", opts: ["Small openings in the roof", "Large windows on the back wall", "Artificial ventilation and light", "All of the above"], a: "Small openings in the roof"},
-                {q: "Timurid influence on the sultanate architecture of India was in the form of:", opts: ["Proportions", "Colour schemes", "Use of decorative tiles", "All of the above"], a: "All of the above"}
-            ],
-            3: [
-                {q: "Which is one of the salient features of Mughal Architecture that was borrowed from the Timurids", opts: ["Arches and minarets", "Pillars", "Ivans", "Pavilions"], a: "Ivans"},
-                {q: "The late Maratha temples of the 18th century were sometimes:", opts: ["Similar to Bhumija and Shekhari types", "Based on South Indian Temples", "Circular in plan", "Unlike in North India"], a: "Similar to Bhumija and Shekhari types"},
-                {q: "The common type for a building plan called the Hasht Bihisht comprised:", opts: ["A circular room with radiation arms", "Four sets of rooms in corners connected by large iwans and galleries", "A building set in a garden", "All of the above"], a: "Four sets of rooms in corners connected by large iwans and galleries"},
-                {q: "Hauz -i- Nilofer or the pool of lotuses, built by Babur was carved out of ?", opts: ["Basalt", "Yellow Dholpur rock", "Marble", "Sandstone"], a: "Yellow Dholpur rock"},
-                {q: "Architecturally, pick the odd one out:", opts: ["Bibi-Ka- Maqbara, Aurangabad", "Humayun's Tomb, Delhi", "Akbar's Tomb, Sikandara", "Taj Mahal, Agra"], a: "Akbar's Tomb, Sikandara"},
-                {q: "The citadel built inside the city of Shahajahanbad is today commonly called as -", opts: ["Purana Qila", "Red Fort", "Chand minar", "Delhi Fort"], a: "Red Fort"},
-                {q: "The four garden plan followed from Bagh-e-babur to many monuments is termed -", opts: ["Chahar bagh", "Chini Khana", "Two portion garden system", "A circular garden"], a: "Chahar bagh"},
-                {q: "The study of Sultanate-Mughal-Maratha-Rajput architecture as a single complex demonstrates", opts: ["Architecture as an expression of political power", "The movement of ideas and people across region", "A uniformity of architectural ideas across India", "All of the above"], a: "All of the above"},
-                {q: "Mughal architectural elements include:", opts: ["Bangla roofs", "Baluster columns", "Multifoil arches", "All of the above"], a: "All of the above"},
-                {q: "Early Maratha architecture was similar to:", opts: ["Mughal architecture", "Yadava Architecture", "Sultanate architecture", "Rashtrakuta architecture"], a: "Sultanate architecture"}
-            ],
-            4: [
-                {q: "Princely states in India emulated the architecture of", opts: ["The Mughals", "The British", "Anyone in power above them", "All of the above"], a: "All of the above"},
-                {q: "Chandigarh was designed by", opts: ["B.V.Doshi", "Louis Kahn", "Le Corbusier", "Charles Correa"], a: "Le Corbusier"},
-                {q: "The Holkar Palace at Chandwad is", opts: ["Built using wood, stone and lime plaster", "Set in the middle of urban settings", "Ornamented with woodwork and stucco", "All of the above"], a: "All of the above"},
-                {q: "A good example of modern architecture relevant to India is:", opts: ["The Inter-University Centre for Astronomy and Astrophysics (IUCAA), Pune", "Majestic Buildings, Mumbai", "Osmania Hospital, Hyderabad", "Jaipur Palace"], a: "The Inter-University Centre for Astronomy and Astrophysics (IUCAA), Pune"},
-                {q: "Palaces built in 18th and 19th century imported ____________ from Europe and other countries", opts: ["Glass, tiles and timber material", "Artisans and craftsmen", "Spices", "Courtyard system"], a: "Glass, tiles and timber material"},
-                {q: "The Marathas build palaces that", opts: ["Borrowed architectural elements from the Mughals", "Were based on vernacular domestic architecture", "Both of the above", "None of the above"], a: "None of the above"},
-                {q: "Name the pillar orders followed by Neo-classical architectural styles", opts: ["Doric, Fluted", "Ionic, Corinthian, Doric, Tuscan", "Square, hexagonal, obelisk", "Squinch, straight"], a: "Ionic, Corinthian, Doric, Tuscan"},
-                {q: "The only Indian winner of the prestigious Pritzker in architecture has been:", opts: ["Charles Correa", "Kulbhushan Jain", "Balkrishna V Doshi", "G.B.Mhatre"], a: "Balkrishna V Doshi"},
-                {q: "Contemporary architectural practice often", opts: ["Privileges the economy of construction over good design", "Is not concerned with construction costs", "Is not controlled by developer interests", "Tried to imitate traditional forms"], a: "Privileges the economy of construction over good design"},
-                {q: "The architectural style that first tied India to an international architecture was", opts: ["Indo-saracenic", "Art Deco", "Modern", "Neo-classical"], a: "Art Deco"}
-            ]
-        };
-
+        const quizDatabase = { /* ... keep your existing quizDatabase here ... */ };
+        
         let currentQuizData = [];
+        let currentWeek = 0;
 
         function loadQuiz(weekNumber) {
+            currentWeek = weekNumber;
             document.getElementById('menu-view').style.display = 'none';
             document.getElementById('quiz-view').style.display = 'block';
             document.getElementById('quiz-title').innerText = `Week - ${weekNumber}`;
+            document.getElementById('retry-btn').style.display = 'none';
+            document.getElementById('main-submit').style.display = 'block';
             document.getElementById('result').innerHTML = '';
             
-            // Get the data and shuffle the questions
+            renderQuestions(weekNumber);
+        }
+
+        function renderQuestions(weekNumber) {
             currentQuizData = [...quizDatabase[weekNumber]].sort(() => Math.random() - 0.5);
-            
             const quizContainer = document.getElementById('quiz-content');
-            quizContainer.innerHTML = ''; // Clear old questions
+            quizContainer.innerHTML = ''; 
 
             currentQuizData.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.classList.add('question');
-                
-                // Shuffle options
                 let shuffledOptions = [...q.opts].sort(() => Math.random() - 0.5);
                 let optionsHTML = '';
                 shuffledOptions.forEach(opt => {
                     optionsHTML += `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`;
                 });
-
                 questionDiv.innerHTML = `<p>${index + 1}) ${q.q} <span id="feedback-${index}"></span></p><div class="options">${optionsHTML}</div>`;
                 quizContainer.appendChild(questionDiv);
             });
             window.scrollTo(0, 0);
+        }
+
+        function resetQuiz() {
+            // Re-render the same week to shuffle and clear everything
+            renderQuestions(currentWeek);
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('retry-btn').style.display = 'none';
+            document.getElementById('main-submit').style.display = 'block';
         }
 
         function goBack() {
@@ -145,7 +106,6 @@
             currentQuizData.forEach((q, index) => {
                 const selected = document.querySelector(`input[name="q${index}"]:checked`);
                 const feedback = document.getElementById(`feedback-${index}`);
-                
                 if (selected) {
                     if (selected.value === q.a) {
                         score++;
@@ -161,6 +121,8 @@
                 }
             });
             document.getElementById('result').innerHTML = `You scored ${score} out of 10!`;
+            document.getElementById('retry-btn').style.display = 'block';
+            document.getElementById('main-submit').style.display = 'none';
             window.scrollTo(0, document.body.scrollHeight);
         }
     </script>
