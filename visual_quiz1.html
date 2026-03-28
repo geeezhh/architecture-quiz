@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Quiz - Week 1</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .back-btn { background-color: #e0e0e0; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .q-img { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px; margin: 15px 0; background: #fafafa; }
+        .question { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .options label { display: block; padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 5px; cursor: pointer; border: 1px solid transparent; }
+        .options label:hover { background: #eef2f7; border-color: #1a73e8; }
+        .submit-btn { width: 100%; padding: 18px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; }
+        #result { margin-top: 25px; text-align: center; font-size: 1.5em; font-weight: bold; }
+        .correct-ans { color: #137333; font-weight: bold; }
+        .wrong-ans { color: #c5221f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="window.location.href='index.html'">← Home</button>
+            <h2 style="color: #34a853; margin: 0;">Visual Practice: Week 1</h2>
+        </div>
+        <div id="quiz-content"></div>
+        <button class="submit-btn" id="sub-btn" onclick="checkScore()">Submit Quiz</button>
+        <button class="submit-btn" id="retry-btn" style="display:none; background:#34a853;" onclick="location.reload()">↻ Try Again</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const visualData = [
+            { q: "Identify the structure:", img: "img1.jpg", opts: ["Chaitya at Bhaja, 2nd c. BCE", "Vihara at Bhaja, 2nd c. BCE", "Chaitya at Ajanta, 4th c. CE", "Vihara at Ajanta, 4th c. CE"], a: "Chaitya at Bhaja, 2nd c. BCE" },
+            { q: "Identify this temple:", img: "img2.jpg", opts: ["Temple at Anwa, 13th c. CE", "Kailasanatha Temple, Kanchipuram", "Kandariya Mahadev Temple, Khajuraho", "Sun Temple, Konark"], a: "Kandariya Mahadev Temple, Khajuraho" },
+            { q: "Identify this stupa:", img: "img3.jpg", opts: ["Sanchi stupa, 2nd c. BCE", "Delhi stupa, 2nd c. BCE", "Nagarjunakonda stupa", "Kanganhalli stupa"], a: "Sanchi stupa, 2nd c. BCE" },
+            { q: "Identify these caves:", img: "img4.jpg", opts: ["Malabar Caves", "Ajanta Caves", "Barabar Caves, 3rd c. BCE", "Udaigiri Caves"], a: "Barabar Caves, 3rd c. BCE" },
+            { q: "Identify this famous temple tower:", img: "img5.jpg", opts: ["Kailasa Temple, Ellora", "Brihadeshwara Temple, Tanjore", "Meenakshi Temple, Madurai", "Shore Temple, Mahabalipuram"], a: "Brihadeshwara Temple, Tanjore, 11th c. CE" },
+            { q: "Identify this Ashokan element:", img: "img6.jpg", opts: ["Column at Persepolis", "Column from Sarnath", "Column at Firuz Shah Kotla", "Column at Lauriya Nandangarh, 3rd c. BCE"], a: "Column at Lauriya Nandangarh, 3rd c. BCE" },
+            { q: "Identify this structure:", img: "img7.jpg", opts: ["Palace at Hampi", "Royal Stables at Hampi", "Virupaksha Temple at Hampi", "Sun Temple, Konark, 13th c. CE"], a: "Sun Temple, Konark, 13th c. CE" },
+            { q: "Identify this Gupta period temple:", img: "img8.jpg", opts: ["Temple 39, Udaigiri", "Temple 17, Sanchi, 5th c. CE", "Temple 64, Vidisha", "Vishnu Temple, Deogarh"], a: "Temple 17, Sanchi, 5th c. CE" },
+            { q: "Identify this coastal structure:", img: "img9.jpg", opts: ["Vishnu Temple, Nachna", "Shore Temple, Mamallapuram, 8th c. CE", "Lad Khan Temple, Aihole", "Arjuna Ratha, Mamallapuram"], a: "Shore Temple, Mamallapuram, 8th c. CE" },
+            { q: "Identify this massive relief carving:", img: "img10.jpg", opts: ["Large relief, Ellora", "Jain Caves, Udaigiri", "Gupta Cave, Udaigiri", "Descent of the Ganges or Arjuna's Penance, Mamallapuram"], a: "Descent of the Ganges or Arjuna's Penance, Mamallapuram" }
+        ];
+
+        const container = document.getElementById('quiz-content');
+        visualData.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="question">
+                    <p><strong>Q${i+1}:</strong> ${q.q} <span id="f-${i}"></span></p>
+                    <img src="${q.img}" class="q-img" onerror="this.src='https://via.placeholder.com/400x200?text=Image+Missing'">
+                    <div class="options">
+                        ${q.opts.map(opt => `<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                </div>`;
+        });
+
+        function checkScore() {
+            let score = 0;
+            visualData.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const feedback = document.getElementById(`f-${i}`);
+                if (selected && (selected.value.includes(q.a) || q.a.includes(selected.value))) {
+                    score++; feedback.innerHTML = "✅ Correct"; feedback.className="correct-ans";
+                } else {
+                    feedback.innerHTML = `❌ Wrong (Ans: ${q.a})`; feedback.className="wrong-ans";
+                }
+            });
+            document.getElementById('result').innerHTML = `Final Score: ${score} / 10`;
+            document.getElementById('sub-btn').style.display = 'none';
+            document.getElementById('retry-btn').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
