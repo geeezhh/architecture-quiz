@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Quiz - Week 4</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .back-btn { background-color: #e0e0e0; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .q-img { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px; margin: 15px 0; background: #fafafa; }
+        .question { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .options label { display: block; padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 5px; cursor: pointer; border: 1px solid transparent; }
+        .options label:hover { background: #eef2f7; border-color: #1a73e8; }
+        .submit-btn { width: 100%; padding: 18px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; }
+        #result { margin-top: 25px; text-align: center; font-size: 1.5em; font-weight: bold; }
+        .correct-ans { color: #137333; font-weight: bold; }
+        .wrong-ans { color: #c5221f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="window.location.href='index.html'">← Home</button>
+            <h2 style="color: #34a853; margin: 0;">Visual Practice: Week 4</h2>
+        </div>
+        <div id="quiz-content"></div>
+        <button class="submit-btn" id="sub-btn" onclick="checkScore()">Submit Quiz</button>
+        <button class="submit-btn" id="retry-btn" style="display:none; background:#34a853;" onclick="location.reload()">↻ Try Again</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const visualData = [
+            { q: "Identify the building and architect:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q1.png", opts: ["IIM Ahmedabad by Louis Kahn", "Jawahar Kala Kendra by Charles Correa", "CEPT Ahmedabad by B.V. Doshi", "IUCAA Pune by Charles Correa"], a: "IIM Ahmedabad by Louis Kahn" },
+            { q: "Identify this monument:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q2.png", opts: ["Chowmahalla Palace, Hyderabad", "Qila Mubarak, Patiala", "Bara Imambara, Lucknow", "Badshahi, Lahore"], a: "Bara Imambara, Lucknow" },
+            { q: "Which of the following points about this monument is FALSE?", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q3.png", opts: ["This is Rashtrapati Bhavan in Delhi", "It was designed by Le Corbusier", "The dome resembles Sanchi stupa", "It is built entirely in black basalt"], a: "It is built entirely in black basalt" },
+            { q: "The Secretariat of Chandigarh is designed by:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q5.png", opts: ["Raj Rewal", "Louis Kahn", "B.V. Doshi", "Le Corbusier"], a: "Le Corbusier" },
+            { q: "Pick the feature which is NOT seen in this facade of Lakshmi Vilas Palace, Vadodara:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q5a.png", opts: ["Bangla roofs", "Cusped arches", "Stucco work", "Domes"], a: "Stucco work" },
+            { q: "Identify the monument:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q6.png", opts: ["Raza Library, Rampur", "Tomb of Safdarjung, Delhi", "Bara Imambara, Lucknow", "Royal Pavilion, Brighton"], a: "Raza Library, Rampur" },
+            { q: "Identify the architectural style extensively adopted in Mumbai in the 20th century:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q7.png", opts: ["Neo Gothic", "Art Deco", "Art Nouveau", "Bauhaus"], a: "Art Deco" },
+            { q: "Kanchenjunga Apartments is designed by:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q8.png", opts: ["Ravindra Bhan", "B.V. Doshi", "Achyut Kanvinde", "Charles Correa"], a: "Charles Correa" },
+            { q: "Identify this structure:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q9.png", opts: ["Palace at Patiala", "Palace at Baroda", "Palace at Chandwad", "Palace at Jaipur"], a: "Palace at Chandwad" },
+            { q: "Identify this building:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A4Q10.png", opts: ["Indian Museum, Kolkata", "Royal Pavilion, Brighton", "Sezincote House, Gloucester", "Raza Library, Rampur"], a: "Royal Pavilion, Brighton" }
+        ];
+
+        const container = document.getElementById('quiz-content');
+        visualData.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="question">
+                    <p><strong>Q${i+1}:</strong> ${q.q} <span id="f-${i}"></span></p>
+                    <img src="${q.img}" class="q-img" onerror="this.src='https://via.placeholder.com/400x200?text=Image+Load+Error'">
+                    <div class="options">
+                        ${q.opts.map(opt => `<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                </div>`;
+        });
+
+        function checkScore() {
+            let score = 0;
+            visualData.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const feedback = document.getElementById(`f-${i}`);
+                if (selected && selected.value === q.a) {
+                    score++; feedback.innerHTML = "✅ Correct"; feedback.className="correct-ans";
+                } else {
+                    feedback.innerHTML = `❌ Wrong (Ans: ${q.a})`; feedback.className="wrong-ans";
+                }
+            });
+            document.getElementById('result').innerHTML = `Final Score: ${score} / 10`;
+            document.getElementById('sub-btn').style.display = 'none';
+            document.getElementById('retry-btn').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

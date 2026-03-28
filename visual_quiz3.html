@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Quiz - Week 3</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .back-btn { background-color: #e0e0e0; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .q-img { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px; margin: 15px 0; background: #fafafa; }
+        .question { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .options label { display: block; padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 5px; cursor: pointer; border: 1px solid transparent; }
+        .options label:hover { background: #eef2f7; border-color: #1a73e8; }
+        .submit-btn { width: 100%; padding: 18px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; }
+        #result { margin-top: 25px; text-align: center; font-size: 1.5em; font-weight: bold; }
+        .correct-ans { color: #137333; font-weight: bold; }
+        .wrong-ans { color: #c5221f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="window.location.href='index.html'">← Home</button>
+            <h2 style="color: #34a853; margin: 0;">Visual Practice: Week 3</h2>
+        </div>
+        <div id="quiz-content"></div>
+        <button class="submit-btn" id="sub-btn" onclick="checkScore()">Submit Quiz</button>
+        <button class="submit-btn" id="retry-btn" style="display:none; background:#34a853;" onclick="location.reload()">↻ Try Again</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const visualData = [
+            { q: "Which of the following is untrue about this temple?", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q1.png", opts: ["This temple is built in the bhumija style", "The temple is at least 800 years old", "The temple is built by Marathas", "The temple is one of the Jyotirlingas"], a: "The temple is at least 800 years old" },
+            { q: "Identify this mausoleum:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q2.png", opts: ["Mausoleum of Afzal Khan", "Mausoleum of Maloji Bhonsale", "Mausoleum of Shah Wali", "Mausoleum of Muhammad Adil Shah"], a: "Mausoleum of Maloji Bhonsale" },
+            { q: "What is the name of this stone inlay technique?", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q3.png", opts: ["Semi-precious stone work", "Pietra Dura", "Inlaying", "Stone carving"], a: "Pietra Dura" },
+            { q: "Identify this palace architecture:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q4.png", opts: ["Palace at Orchha", "Palace at Agra", "Palace at Pune", "Palace at Vijayanagara"], a: "Palace at Orchha" },
+            { q: "Identify the monument:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q5.png", opts: ["Moti Masjid, Delhi", "Camp of Aurangzeb, Alamgir", "Shahi Masjid, Lahore", "Tomb of Shah Nawaz, Burhanpur"], a: "Moti Masjid, Delhi" },
+            { q: "Specify the time period when the above temple must have been built:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q6.png", opts: ["8th-9th century CE", "11th-14th century CE", "20th century CE", "1st-2nd century CE"], a: "11th-14th century CE" },
+            { q: "Identify the above monument:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q7(1).png", opts: ["Alai Darwaza, Fatehpur Sikri", "Badshahi Mosque", "Akbar's Tomb", "Mosque in Taj Mahal"], a: "Akbar's Tomb" },
+            { q: "Identify this monument:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q8.png", opts: ["Bibi ka maqbara", "Taj Mahal", "Humayun's Tomb", "Charminar"], a: "Bibi ka maqbara" },
+            { q: "Select the appropriate description for this structure:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q9.png", opts: ["Bhumija temple from Madhya Pradesh, 10th century", "Bhumija temple from Madhya Pradesh, 12th century", "Bhumija temple from Maharashtra, 18th century", "Bhumija-Shekhari temple from Maharashtra, 18th century"], a: "Bhumija-Shekhari temple from Maharashtra, 18th century" },
+            { q: "This structure is part of a _________:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/ar04A3Q10.png", opts: ["Maratha temple", "Rajput temple", "Bengal temple", "Taziah for Muharram"], a: "Maratha temple" }
+        ];
+
+        const container = document.getElementById('quiz-content');
+        visualData.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="question">
+                    <p><strong>Q${i+1}:</strong> ${q.q} <span id="f-${i}"></span></p>
+                    <img src="${q.img}" class="q-img" onerror="this.src='https://via.placeholder.com/400x200?text=Image+Load+Error'">
+                    <div class="options">
+                        ${q.opts.map(opt => `<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                </div>`;
+        });
+
+        function checkScore() {
+            let score = 0;
+            visualData.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const feedback = document.getElementById(`f-${i}`);
+                if (selected && selected.value === q.a) {
+                    score++; feedback.innerHTML = "✅ Correct"; feedback.className="correct-ans";
+                } else {
+                    feedback.innerHTML = `❌ Wrong (Ans: ${q.a})`; feedback.className="wrong-ans";
+                }
+            });
+            document.getElementById('result').innerHTML = `Final Score: ${score} / 10`;
+            document.getElementById('sub-btn').style.display = 'none';
+            document.getElementById('retry-btn').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
