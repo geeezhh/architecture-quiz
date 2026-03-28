@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Quiz - Week 2</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .back-btn { background-color: #e0e0e0; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .q-img { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px; margin: 15px 0; background: #fafafa; }
+        .question { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .options label { display: block; padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 5px; cursor: pointer; border: 1px solid transparent; }
+        .options label:hover { background: #eef2f7; border-color: #1a73e8; }
+        .submit-btn { width: 100%; padding: 18px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; }
+        #result { margin-top: 25px; text-align: center; font-size: 1.5em; font-weight: bold; }
+        .correct-ans { color: #137333; font-weight: bold; }
+        .wrong-ans { color: #c5221f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <button class="back-btn" onclick="window.location.href='index.html'">← Home</button>
+            <h2 style="color: #34a853; margin: 0;">Visual Practice: Week 2</h2>
+        </div>
+        <div id="quiz-content"></div>
+        <button class="submit-btn" id="sub-btn" onclick="checkScore()">Submit Quiz</button>
+        <button class="submit-btn" id="retry-btn" style="display:none; background:#34a853;" onclick="location.reload()">↻ Try Again</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const visualData = [
+            { q: "Identify this scroll:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q1.png", opts: ["Dead sea scrolls", "Topkapi scroll", "Lost gospels", "Indian craft manual"], a: "Topkapi scroll" },
+            { q: "Identify this tomb:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q2.png", opts: ["Tomb of Mahmud Gawan, Bidar", "Tomb of Ali Adil Shah, Bijapur", "Tomb of Ghiyassuddin Tughlaq, Delhi", "Tomb of Akbar, Sikandara"], a: "Tomb of Ghiyassuddin Tughlaq, Delhi" },
+            { q: "Identify this structure:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q3.png", opts: ["Elephant stables, Vijayanagara", "Palace of the king of Vijayanagara", "Fort of Bidar", "Jami mosque, Bijapur"], a: "Elephant stables, Vijayanagara" },
+            { q: "Identify this monument:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q4.png", opts: ["Kanchani Mahal", "Diwan-e-Khas", "Lotus Mahal", "Rani's Palace"], a: "Lotus Mahal" },
+            { q: "Identify this mosque:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q5.png", opts: ["Jami Mosque, Ahmedabad", "Jami Mosque, Daulatabad", "Jami Mosque, Gulbarga", "Jami Mosque, Delhi"], a: "Jami Mosque, Ahmedabad" },
+            { q: "Identify this minar:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q6.png", opts: ["Qutb Minar, Delhi", "Chand Minar, Daulatabad", "Hiran Minar, Lahore", "Charminar, Hyderabad"], a: "Chand Minar, Daulatabad" },
+            { q: "Identify this educational building:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q7.png", opts: ["Palace of Bahamani Sultans, Bidar", "Palace of Gujarat Sultans, Champaner", "Mosque in Bidar", "Madrasa of Mahmud Gawan, Bidar"], a: "Madrasa of Mahmud Gawan, Bidar" },
+            { q: "Identify this world-famous tower:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q8.png", opts: ["Qutb Minar, Delhi", "Chand Minar, Daulatabad", "Charminar, Hyderabad", "Hiran Minar, Lahore"], a: "Qutb Minar, Delhi" },
+            { q: "Identify this structure:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q9.png", opts: ["Temple at Anwa", "Gondeshwara temple at Sinnar", "Mahadev temple at Ambernath", "Grishneshwar temple, Ellora"], a: "Temple at Anwa" },
+            { q: "Identify this massive mosque structure:", img: "https://storage.googleapis.com/swayam-node1-production.appspot.com/assets/img/noc21_ar04/A2Q10.png", opts: ["Adina Mosque, West Bengal", "Jama Masjid, Delhi", "Palace of Jaunpur", "Daulatabad Mosque"], a: "Adina Mosque, West Bengal" }
+        ];
+
+        const container = document.getElementById('quiz-content');
+        visualData.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="question">
+                    <p><strong>Q${i+1}:</strong> ${q.q} <span id="f-${i}"></span></p>
+                    <img src="${q.img}" class="q-img" onerror="this.src='https://via.placeholder.com/400x200?text=Image+Load+Error'">
+                    <div class="options">
+                        ${q.opts.map(opt => `<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                </div>`;
+        });
+
+        function checkScore() {
+            let score = 0;
+            visualData.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const feedback = document.getElementById(`f-${i}`);
+                if (selected && selected.value === q.a) {
+                    score++; feedback.innerHTML = "✅ Correct"; feedback.className="correct-ans";
+                } else {
+                    feedback.innerHTML = `❌ Wrong (Ans: ${q.a})`; feedback.className="wrong-ans";
+                }
+            });
+            document.getElementById('result').innerHTML = `Final Score: ${score} / 10`;
+            document.getElementById('sub-btn').style.display = 'none';
+            document.getElementById('retry-btn').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
